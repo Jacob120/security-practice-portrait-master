@@ -12,17 +12,19 @@ exports.add = async (req, res) => {
 
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
       const fileExt = fileName.split('.').slice(-1)[0];
-      if (fileExt[1] !== '.jpg' || '.png' || '.gif') res.status(500).json(err); // check if uploaded file is an image
-
-      const newPhoto = new Photo({
-        title,
-        author,
-        email,
-        src: fileName,
-        votes: 0,
-      });
-      await newPhoto.save(); // ...save new photo in DB
-      res.json(newPhoto);
+      if ((fileExt[1] === '.jpg' || '.png' || '.gif') && title.length <= 25) {
+        const newPhoto = new Photo({
+          title,
+          author,
+          email,
+          src: fileName,
+          votes: 0,
+        });
+        await newPhoto.save(); // ...save new photo in DB
+        res.json(newPhoto);
+      } else {
+        throw new Error('Wrong file type!');
+      }
     } else {
       throw new Error('Wrong input!');
     }
